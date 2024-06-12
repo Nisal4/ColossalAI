@@ -1,8 +1,8 @@
 import collections
 import logging
-import random
 
 import jieba
+import secrets
 
 jieba.setLogLevel(logging.CRITICAL)
 import re
@@ -120,7 +120,7 @@ class PreTrainingDataset:
 
             # cand_indexes.append(i)
 
-        random.shuffle(cand_indexes)
+        secrets.SystemRandom().shuffle(cand_indexes)
         output_tokens = list(tokens)
 
         num_to_predict = min(self.max_predictions_per_seq, max(1, int(round(len(tokens) * self.masked_lm_prob))))
@@ -136,15 +136,15 @@ class PreTrainingDataset:
 
             masked_token = None
             # 80% mask
-            if random.random() < 0.8:
+            if secrets.SystemRandom().random() < 0.8:
                 masked_token = "[MASK]"
             else:
                 # 10% Keep Original
-                if random.random() < 0.5:
+                if secrets.SystemRandom().random() < 0.5:
                     masked_token = tokens[index]
                 # 10% replace w/ random word
                 else:
-                    masked_token = self.vocab_words[random.randint(0, len(self.vocab_words) - 1)]
+                    masked_token = self.vocab_words[secrets.SystemRandom().randint(0, len(self.vocab_words) - 1)]
 
             output_tokens[index] = masked_token
             masked_lms.append(MaskedLMInstance(index=index, label=tokens[index]))
@@ -208,7 +208,7 @@ class PreTrainingDataset:
             else:
                 cand_indexes.append([i])
 
-        random.shuffle(cand_indexes)
+        secrets.SystemRandom().shuffle(cand_indexes)
 
         output_tokens = [t[2:] if len(self.whole_rec.findall(t)) > 0 else t for t in tokens]  # 去掉"##"
 
@@ -235,17 +235,17 @@ class PreTrainingDataset:
 
                 masked_token = None
                 # 80% of the time, replace with [MASK]
-                if random.random() < 0.8:
+                if secrets.SystemRandom().random() < 0.8:
                     masked_token = "[MASK]"
                 else:
                     # 10% of the time, keep original
-                    if random.random() < 0.5:
+                    if secrets.SystemRandom().random() < 0.5:
                         masked_token = (
                             tokens[index][2:] if len(self.whole_rec.findall(tokens[index])) > 0 else tokens[index]
                         )  # 去掉"##"
                     # 10% of the time, replace with random word
                     else:
-                        masked_token = self.vocab_words[random.randint(0, len(self.vocab_words) - 1)]
+                        masked_token = self.vocab_words[secrets.SystemRandom().randint(0, len(self.vocab_words) - 1)]
 
                 output_tokens[index] = masked_token
 

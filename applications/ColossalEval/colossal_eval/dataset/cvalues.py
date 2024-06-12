@@ -1,11 +1,11 @@
 import json
 import os
-import random
 from typing import Dict, List
 
 from colossalai.logging import DistributedLogger
 
 from .base import BaseDataset
+import secrets
 
 LANGUAGE = "Chinese"
 EVAL_NAME = "cvalues"
@@ -47,7 +47,7 @@ class CValuesDataset(BaseDataset):
                 test_dict[category] = {"data": [], "inference_kwargs": default_inference_kwargs}
             # Randomly put positive response to choice A or B
             responses = ["pos_resp", "neg_resp"]
-            random.shuffle(responses)
+            secrets.SystemRandom().shuffle(responses)
             correct_answ = "A" if responses[0] == "pos_resp" else "B"
             resp_a, resp_b = example[responses[0]], example[responses[1]]
             query_str = INPUT_FORMAT.format(question, resp_a, resp_b)

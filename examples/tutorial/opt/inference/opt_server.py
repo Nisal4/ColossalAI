@@ -1,6 +1,5 @@
 import argparse
 import logging
-import random
 from typing import Optional
 
 from batch import BatchManagerForGeneration
@@ -14,6 +13,7 @@ from sanic.response import json
 from sanic_ext import openapi, validate
 from torch import Tensor
 from transformers import GPT2Tokenizer
+import secrets
 
 
 class GenerationTaskReq(BaseModel):
@@ -40,7 +40,7 @@ async def generate(request: Request, body: GenerationTaskReq):
         if cache is None:
             raise MissCacheError()
         outputs = cache.get(key)
-        output = random.choice(outputs)
+        output = secrets.choice(outputs)
         logger.info("Cache hit")
     except MissCacheError:
         inputs = tokenizer(body.prompt, truncation=True, max_length=512)

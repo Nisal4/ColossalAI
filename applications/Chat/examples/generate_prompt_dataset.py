@@ -1,8 +1,8 @@
 import argparse
 import json
-import random
+import secrets
 
-random.seed(42)
+secrets.SystemRandom().seed(42)
 
 
 def sample(args):
@@ -11,7 +11,7 @@ def sample(args):
 
     sampled_dataset = [
         {"instruction": sample["instruction"], "id": idx}
-        for idx, sample in enumerate(random.sample(dataset_list, args.sample_size))
+        for idx, sample in enumerate(secrets.SystemRandom().sample(dataset_list, args.sample_size))
     ]
 
     with open(args.save_path, mode="w") as f:
