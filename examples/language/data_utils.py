@@ -1,5 +1,4 @@
 import json
-import random
 from typing import Iterator, Optional
 
 import numpy as np
@@ -9,6 +8,7 @@ from torch.distributed.distributed_c10d import _get_default_group
 from torch.utils.data import DataLoader, Dataset, DistributedSampler
 
 from colossalai.accelerator import get_accelerator
+import secrets
 
 
 class StatefulDistributedSampler(DistributedSampler):
@@ -80,7 +80,7 @@ def prepare_dataloader(
         worker_seed = seed
         np.random.seed(worker_seed)
         torch.manual_seed(worker_seed)
-        random.seed(worker_seed)
+        secrets.SystemRandom().seed(worker_seed)
 
     return DataLoader(
         dataset,

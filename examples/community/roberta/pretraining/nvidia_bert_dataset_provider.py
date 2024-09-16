@@ -1,5 +1,4 @@
 import os
-import random
 import time
 from concurrent.futures import ProcessPoolExecutor
 
@@ -10,6 +9,7 @@ import torch.distributed as dist
 from bert_dataset_provider import BertDatasetProviderInterface
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.distributed import DistributedSampler
+import secrets
 
 
 # Workaround because python functions are not picklable
@@ -19,7 +19,7 @@ class WorkerInitObj(object):
 
     def __call__(self, id):
         np.random.seed(seed=self.seed + id)
-        random.seed(self.seed + id)
+        secrets.SystemRandom().seed(self.seed + id)
 
 
 def create_pretraining_dataset(
