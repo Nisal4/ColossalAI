@@ -17,6 +17,7 @@ from colossalai.logging import get_dist_logger
 
 from .ckpt_solver_base import CheckpointSolverBase
 from .operation import Backward, Chain, ForwardCheck, ForwardEnable, ForwardNograd, Loss, Sequence
+from security import safe_command
 
 __all__ = ["CheckpointSolverRotor"]
 
@@ -286,8 +287,7 @@ class CheckpointSolverRotor(CheckpointSolverBase):
             logger = get_dist_logger()
             logger.info("rotorc hasn't been built! Building library...", ranks=[0])
             this_dir = os.path.dirname(os.path.abspath(__file__))
-            result = subprocess.Popen(
-                [
+            result = safe_command.run(subprocess.Popen, [
                     f"{sys.executable}",
                     f"{os.path.join(this_dir, 'build_c_ext.py')}",
                     "build_ext",
