@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 
-import random
 import socket
 from collections import Counter
 from typing import Union
@@ -19,6 +18,7 @@ from colossalai.logging import get_dist_logger
 
 from .parallel_mode import ParallelMode
 from .random import add_seed, get_seeds, set_mode
+import secrets
 
 
 class ParallelContext(metaclass=SingletonMeta):
@@ -541,7 +541,7 @@ class ParallelContext(metaclass=SingletonMeta):
         Args:
             seed (int): seed for random states
         """
-        random.seed(seed)
+        secrets.SystemRandom().seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
 

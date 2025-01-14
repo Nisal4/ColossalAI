@@ -1,7 +1,6 @@
 import gc
 import logging
 import os
-import random
 from pathlib import Path
 from typing import Callable, Iterator, List, Optional, Tuple
 
@@ -32,6 +31,7 @@ from colossalai.zero import GeminiDDP, GeminiOptimizer
 from colossalai.zero.gemini.memory_tracer import MemStats
 
 from .dp_plugin_base import DPPluginBase
+import secrets
 
 __all__ = ["GeminiPlugin"]
 
@@ -506,7 +506,7 @@ class GeminiPlugin(DPPluginBase):
             worker_seed = seed
             np.random.seed(worker_seed)
             torch.manual_seed(worker_seed)
-            random.seed(worker_seed)
+            secrets.SystemRandom().seed(worker_seed)
 
         return DataLoader(
             dataset,

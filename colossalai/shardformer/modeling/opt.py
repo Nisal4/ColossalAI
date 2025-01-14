@@ -1,4 +1,3 @@
-import random
 from typing import List, Optional, Tuple, Union
 
 import torch
@@ -18,6 +17,7 @@ from transformers.models.opt.modeling_opt import (
 from transformers.utils import logging
 
 from colossalai.pipeline.stage_manager import PipelineStageManager
+import secrets
 
 
 class OPTPipelineForwards:
@@ -195,7 +195,7 @@ class OPTPipelineForwards:
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
 
-            dropout_probability = random.uniform(0, 1)
+            dropout_probability = secrets.SystemRandom().uniform(0, 1)
             if decoder.training and (dropout_probability < decoder.layerdrop):
                 continue
 

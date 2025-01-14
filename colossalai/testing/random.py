@@ -1,11 +1,11 @@
-import random
 
 import numpy as np
 import torch
+import secrets
 
 
 def seed_all(seed, cuda_deterministic=False):
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():

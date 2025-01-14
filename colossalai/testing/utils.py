@@ -1,5 +1,4 @@
 import gc
-import random
 import re
 import socket
 from functools import partial
@@ -11,6 +10,7 @@ import torch.multiprocessing as mp
 from packaging import version
 
 from colossalai.accelerator import get_accelerator
+import secrets
 
 
 def parameterize(argument: str, values: List[Any]) -> Callable:
@@ -216,7 +216,7 @@ def free_port() -> int:
         int: A free port on localhost.
     """
     while True:
-        port = random.randint(20000, 65000)
+        port = secrets.SystemRandom().randint(20000, 65000)
         try:
             with socket.socket() as sock:
                 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)

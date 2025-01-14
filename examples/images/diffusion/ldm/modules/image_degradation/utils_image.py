@@ -1,12 +1,12 @@
 import math
 import os
-import random
 from datetime import datetime
 
 import cv2
 import numpy as np
 import torch
 from torchvision.utils import make_grid
+import secrets
 
 # import matplotlib.pyplot as plt   # TODO: check with Dominik, also bsrgan.py vs bsrgan_light.py
 
@@ -464,9 +464,9 @@ def augment_img_np3(img, mode=0):
 
 def augment_imgs(img_list, hflip=True, rot=True):
     # horizontal flip OR rotate
-    hflip = hflip and random.random() < 0.5
-    vflip = rot and random.random() < 0.5
-    rot90 = rot and random.random() < 0.5
+    hflip = hflip and secrets.SystemRandom().random() < 0.5
+    vflip = rot and secrets.SystemRandom().random() < 0.5
+    rot90 = rot and secrets.SystemRandom().random() < 0.5
 
     def _augment(img):
         if hflip:

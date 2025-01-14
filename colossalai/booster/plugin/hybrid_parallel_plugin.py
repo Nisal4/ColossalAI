@@ -1,5 +1,4 @@
 import ctypes
-import random
 import warnings
 from contextlib import contextmanager
 from functools import partial
@@ -33,6 +32,7 @@ from colossalai.tensor.d_tensor.api import is_distributed_tensor
 from colossalai.zero.low_level import LowLevelZeroOptimizer
 
 from .pp_plugin_base import PipelinePluginBase
+import secrets
 
 DP_AXIS, PP_AXIS, TP_AXIS = 0, 1, 2
 
@@ -1259,7 +1259,7 @@ class HybridParallelPlugin(PipelinePluginBase):
             worker_seed = seed
             np.random.seed(worker_seed)
             torch.manual_seed(worker_seed)
-            random.seed(worker_seed)
+            secrets.SystemRandom().seed(worker_seed)
 
         return DataLoader(
             dataset,

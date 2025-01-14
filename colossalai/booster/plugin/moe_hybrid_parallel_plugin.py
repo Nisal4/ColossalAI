@@ -1,4 +1,3 @@
-import random
 from types import MethodType
 from typing import Callable, Optional, OrderedDict, Tuple
 
@@ -28,6 +27,7 @@ from colossalai.pipeline.stage_manager import PipelineStageManager
 from colossalai.shardformer import ShardConfig
 from colossalai.shardformer.policies.base_policy import Policy
 from colossalai.zero.low_level import LowLevelZeroOptimizer
+import secrets
 
 PP_AXIS, DP_AXIS, TP_AXIS = 0, 1, 2
 
@@ -328,7 +328,7 @@ class MoeHybridParallelPlugin(HybridParallelPlugin):
             worker_seed = seed
             np.random.seed(worker_seed)
             torch.manual_seed(worker_seed)
-            random.seed(worker_seed)
+            secrets.SystemRandom().seed(worker_seed)
 
         return DataLoader(
             dataset,

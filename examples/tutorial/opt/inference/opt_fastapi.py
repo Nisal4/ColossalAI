@@ -1,6 +1,5 @@
 import argparse
 import logging
-import random
 from typing import Optional
 
 import uvicorn
@@ -11,6 +10,7 @@ from energonai.model import opt_6B, opt_30B, opt_125M, opt_175B
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel, Field
 from transformers import GPT2Tokenizer
+import secrets
 
 
 class GenerationTaskReq(BaseModel):
@@ -35,7 +35,7 @@ async def generate(data: GenerationTaskReq, request: Request):
         if cache is None:
             raise MissCacheError()
         outputs = cache.get(key)
-        output = random.choice(outputs)
+        output = secrets.choice(outputs)
         logger.info("Cache hit")
     except MissCacheError:
         inputs = tokenizer(data.prompt, truncation=True, max_length=512)

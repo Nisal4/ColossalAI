@@ -1,11 +1,11 @@
 import itertools
-import random
 
 import numpy as np
 from megatron import get_args, get_tokenizer
 from megatron.data.dataset_utils import get_indexed_dataset_
 from megatron.data.realm_dataset_utils import get_block_samples_mapping
 from torch.utils.data import Dataset
+import secrets
 
 
 def make_attention_mask(source_block, target_block):
@@ -69,7 +69,7 @@ class ICTDataset(Dataset):
         self.query_in_block_prob = query_in_block_prob
         self.block_dataset = block_dataset
         self.title_dataset = title_dataset
-        self.rng = random.Random(self.seed)
+        self.rng = secrets.SystemRandom().Random(self.seed)
         self.use_titles = use_titles
         self.use_one_sent_docs = use_one_sent_docs
 

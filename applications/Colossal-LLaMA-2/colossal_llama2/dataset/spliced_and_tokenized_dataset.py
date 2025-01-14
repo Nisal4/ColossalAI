@@ -5,7 +5,6 @@ Splicing multiple pre-tokenized sequence data points
 """
 
 import bisect
-import random
 import warnings
 from copy import deepcopy
 from typing import Any, Callable, Dict, Iterable, List, Tuple, Union
@@ -18,6 +17,7 @@ from transformers.tokenization_utils import PreTrainedTokenizer
 from colossalai.logging import get_dist_logger
 
 from .conversation import Conversation, default_conversation
+import secrets
 
 logger = get_dist_logger()
 
@@ -293,7 +293,7 @@ class ClosedToConstantLengthSplicedDataset(IterableDataset):
             if self.infinite is False and more_data_points is False and len(spliced_input_ids) > 0:
                 examples.append({self.input_ids_field: spliced_input_ids, self.labels_field: spliced_labels})
             if self.shuffle:
-                random.shuffle(examples)
+                secrets.SystemRandom().shuffle(examples)
             for spliced_data_point in examples:
                 # TODO(2023-09-18): check errors for each spliced tokenized data point.
                 self.current_size += 1

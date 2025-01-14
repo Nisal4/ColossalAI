@@ -1,4 +1,3 @@
-import random
 
 import numpy as np
 import torch
@@ -7,6 +6,7 @@ from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
 
 from .plugin_base import Plugin
+import secrets
 
 
 class DPPluginBase(Plugin):
@@ -62,7 +62,7 @@ class DPPluginBase(Plugin):
             worker_seed = seed
             np.random.seed(worker_seed)
             torch.manual_seed(worker_seed)
-            random.seed(worker_seed)
+            secrets.SystemRandom().seed(worker_seed)
 
         return DataLoader(
             dataset,

@@ -3,7 +3,6 @@
 # adapted from torch.utils.data.DistributedSampler
 
 import math
-import random
 from typing import Iterator, TypeVar
 
 import numpy as np
@@ -12,6 +11,7 @@ from torch.utils.data import DataLoader, Dataset, Sampler
 
 from colossalai.legacy.context.parallel_mode import ParallelMode
 from colossalai.legacy.core import global_context as gpc
+import secrets
 
 T_co = TypeVar("T_co", covariant=True)
 
@@ -136,7 +136,7 @@ def get_dataloader(
         worker_seed = seed
         np.random.seed(worker_seed)
         torch.manual_seed(worker_seed)
-        random.seed(worker_seed)
+        secrets.SystemRandom().seed(worker_seed)
 
     if sampler is None:
         return DataLoader(

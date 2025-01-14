@@ -2,7 +2,6 @@ import argparse
 import multiprocessing
 import os
 import time
-from random import shuffle
 
 import h5py
 import numpy as np
@@ -10,6 +9,7 @@ import psutil
 from get_mask import PreTrainingDataset
 from tqdm import tqdm
 from transformers import AutoTokenizer
+import secrets
 
 
 def get_raw_instance(document, max_sequence_length=512):
@@ -163,7 +163,7 @@ def split_numpy_chunk_pool(input_path, output_path, pretrain_data, worker, dupe_
         for ins in instances:
             new_instances.append(ins)
 
-    shuffle(new_instances)
+    secrets.SystemRandom().shuffle(new_instances)
     instances = new_instances
     print("after dupe_factor, len instance", len(instances))
 

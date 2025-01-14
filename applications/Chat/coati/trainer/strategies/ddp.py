@@ -1,5 +1,4 @@
 import os
-import random
 from collections import OrderedDict
 from typing import Callable, Optional
 
@@ -18,6 +17,7 @@ from colossalai.booster.plugin.torch_ddp_plugin import TorchDDPModel
 
 from .base import Strategy
 from .sampler import DistributedSampler
+import secrets
 
 
 # TODO Move this to a util.py   (Moving to ray.util introduces ringed import)
@@ -64,7 +64,7 @@ class DDPStrategy(Strategy):
         self.set_seed(self.seed)
 
     def set_seed(self, seed: int) -> None:
-        random.seed(seed)
+        secrets.SystemRandom().seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
 

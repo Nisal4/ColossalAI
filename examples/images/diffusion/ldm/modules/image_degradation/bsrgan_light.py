@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import random
 from functools import partial
 
 import albumentations
@@ -12,6 +11,7 @@ import torch
 from scipy import ndimage
 from scipy.interpolate import interp2d
 from scipy.linalg import orth
+import secrets
 
 """
 # --------------------------------------------
@@ -327,12 +327,12 @@ def add_blur(img, sf=4):
     wd2 = wd2 / 4
     wd = wd / 4
 
-    if random.random() < 0.5:
-        l1 = wd2 * random.random()
-        l2 = wd2 * random.random()
-        k = anisotropic_Gaussian(ksize=random.randint(2, 11) + 3, theta=random.random() * np.pi, l1=l1, l2=l2)
+    if secrets.SystemRandom().random() < 0.5:
+        l1 = wd2 * secrets.SystemRandom().random()
+        l2 = wd2 * secrets.SystemRandom().random()
+        k = anisotropic_Gaussian(ksize=secrets.SystemRandom().randint(2, 11) + 3, theta=secrets.SystemRandom().random() * np.pi, l1=l1, l2=l2)
     else:
-        k = fspecial("gaussian", random.randint(2, 4) + 3, wd * random.random())
+        k = fspecial("gaussian", secrets.SystemRandom().randint(2, 4) + 3, wd * secrets.SystemRandom().random())
     img = ndimage.convolve(img, np.expand_dims(k, axis=2), mode="mirror")
 
     return img
@@ -341,12 +341,12 @@ def add_blur(img, sf=4):
 def add_resize(img, sf=4):
     rnum = np.random.rand()
     if rnum > 0.8:  # up
-        sf1 = random.uniform(1, 2)
+        sf1 = secrets.SystemRandom().uniform(1, 2)
     elif rnum < 0.7:  # down
-        sf1 = random.uniform(0.5 / sf, 1)
+        sf1 = secrets.SystemRandom().uniform(0.5 / sf, 1)
     else:
         sf1 = 1.0
-    img = cv2.resize(img, (int(sf1 * img.shape[1]), int(sf1 * img.shape[0])), interpolation=random.choice([1, 2, 3]))
+    img = cv2.resize(img, (int(sf1 * img.shape[1]), int(sf1 * img.shape[0])), interpolation=secrets.choice([1, 2, 3]))
     img = np.clip(img, 0.0, 1.0)
 
     return img
@@ -370,7 +370,7 @@ def add_resize(img, sf=4):
 
 
 def add_Gaussian_noise(img, noise_level1=2, noise_level2=25):
-    noise_level = random.randint(noise_level1, noise_level2)
+    noise_level = secrets.SystemRandom().randint(noise_level1, noise_level2)
     rnum = np.random.rand()
     if rnum > 0.6:  # add color Gaussian noise
         img = img + np.random.normal(0, noise_level / 255.0, img.shape).astype(np.float32)
@@ -387,9 +387,9 @@ def add_Gaussian_noise(img, noise_level1=2, noise_level2=25):
 
 
 def add_speckle_noise(img, noise_level1=2, noise_level2=25):
-    noise_level = random.randint(noise_level1, noise_level2)
+    noise_level = secrets.SystemRandom().randint(noise_level1, noise_level2)
     img = np.clip(img, 0.0, 1.0)
-    rnum = random.random()
+    rnum = secrets.SystemRandom().random()
     if rnum > 0.6:
         img += img * np.random.normal(0, noise_level / 255.0, img.shape).astype(np.float32)
     elif rnum < 0.4:
@@ -406,8 +406,8 @@ def add_speckle_noise(img, noise_level1=2, noise_level2=25):
 
 def add_Poisson_noise(img):
     img = np.clip((img * 255.0).round(), 0, 255) / 255.0
-    vals = 10 ** (2 * random.random() + 2.0)  # [2, 4]
-    if random.random() < 0.5:
+    vals = 10 ** (2 * secrets.SystemRandom().random() + 2.0)  # [2, 4]
+    if secrets.SystemRandom().random() < 0.5:
         img = np.random.poisson(img * vals).astype(np.float32) / vals
     else:
         img_gray = np.dot(img[..., :3], [0.299, 0.587, 0.114])
@@ -419,7 +419,7 @@ def add_Poisson_noise(img):
 
 
 def add_JPEG_noise(img):
-    quality_factor = random.randint(80, 95)
+    quality_factor = secrets.SystemRandom().randint(80, 95)
     img = cv2.cvtColor(util.single2uint(img), cv2.COLOR_RGB2BGR)
     result, encimg = cv2.imencode(".jpg", img, [int(cv2.IMWRITE_JPEG_QUALITY), quality_factor])
     img = cv2.imdecode(encimg, 1)
@@ -429,8 +429,8 @@ def add_JPEG_noise(img):
 
 def random_crop(lq, hq, sf=4, lq_patchsize=64):
     h, w = lq.shape[:2]
-    rnd_h = random.randint(0, h - lq_patchsize)
-    rnd_w = random.randint(0, w - lq_patchsize)
+    rnd_h = secrets.SystemRandom().randint(0, h - lq_patchsize)
+    rnd_w = secrets.SystemRandom().randint(0, w - lq_patchsize)
     lq = lq[rnd_h : rnd_h + lq_patchsize, rnd_w : rnd_w + lq_patchsize, :]
 
     rnd_h_H, rnd_w_H = int(rnd_h * sf), int(rnd_w * sf)
@@ -463,17 +463,17 @@ def degradation_bsrgan(img, sf=4, lq_patchsize=72, isp_model=None):
 
     hq = img.copy()
 
-    if sf == 4 and random.random() < scale2_prob:  # downsample1
+    if sf == 4 and secrets.SystemRandom().random() < scale2_prob:  # downsample1
         if np.random.rand() < 0.5:
             img = cv2.resize(
-                img, (int(1 / 2 * img.shape[1]), int(1 / 2 * img.shape[0])), interpolation=random.choice([1, 2, 3])
+                img, (int(1 / 2 * img.shape[1]), int(1 / 2 * img.shape[0])), interpolation=secrets.choice([1, 2, 3])
             )
         else:
             img = util.imresize_np(img, 1 / 2, True)
         img = np.clip(img, 0.0, 1.0)
         sf = 2
 
-    shuffle_order = random.sample(range(7), 7)
+    shuffle_order = secrets.SystemRandom().sample(range(7), 7)
     idx1, idx2 = shuffle_order.index(2), shuffle_order.index(3)
     if idx1 > idx2:  # keep downsample3 last
         shuffle_order[idx1], shuffle_order[idx2] = shuffle_order[idx2], shuffle_order[idx1]
@@ -488,15 +488,15 @@ def degradation_bsrgan(img, sf=4, lq_patchsize=72, isp_model=None):
         elif i == 2:
             a, b = img.shape[1], img.shape[0]
             # downsample2
-            if random.random() < 0.75:
-                sf1 = random.uniform(1, 2 * sf)
+            if secrets.SystemRandom().random() < 0.75:
+                sf1 = secrets.SystemRandom().uniform(1, 2 * sf)
                 img = cv2.resize(
                     img,
                     (int(1 / sf1 * img.shape[1]), int(1 / sf1 * img.shape[0])),
-                    interpolation=random.choice([1, 2, 3]),
+                    interpolation=secrets.choice([1, 2, 3]),
                 )
             else:
-                k = fspecial("gaussian", 25, random.uniform(0.1, 0.6 * sf))
+                k = fspecial("gaussian", 25, secrets.SystemRandom().uniform(0.1, 0.6 * sf))
                 k_shifted = shift_pixel(k, sf)
                 k_shifted = k_shifted / k_shifted.sum()  # blur with shifted kernel
                 img = ndimage.convolve(img, np.expand_dims(k_shifted, axis=2), mode="mirror")
@@ -505,7 +505,7 @@ def degradation_bsrgan(img, sf=4, lq_patchsize=72, isp_model=None):
 
         elif i == 3:
             # downsample3
-            img = cv2.resize(img, (int(1 / sf * a), int(1 / sf * b)), interpolation=random.choice([1, 2, 3]))
+            img = cv2.resize(img, (int(1 / sf * a), int(1 / sf * b)), interpolation=secrets.choice([1, 2, 3]))
             img = np.clip(img, 0.0, 1.0)
 
         elif i == 4:
@@ -514,12 +514,12 @@ def degradation_bsrgan(img, sf=4, lq_patchsize=72, isp_model=None):
 
         elif i == 5:
             # add JPEG noise
-            if random.random() < jpeg_prob:
+            if secrets.SystemRandom().random() < jpeg_prob:
                 img = add_JPEG_noise(img)
 
         elif i == 6:
             # add processed camera sensor noise
-            if random.random() < isp_prob and isp_model is not None:
+            if secrets.SystemRandom().random() < isp_prob and isp_model is not None:
                 with torch.no_grad():
                     img, hq = isp_model.forward(img.copy(), hq)
 
@@ -554,19 +554,19 @@ def degradation_bsrgan_variant(image, sf=4, isp_model=None, up=False):
 
     image.copy()
 
-    if sf == 4 and random.random() < scale2_prob:  # downsample1
+    if sf == 4 and secrets.SystemRandom().random() < scale2_prob:  # downsample1
         if np.random.rand() < 0.5:
             image = cv2.resize(
                 image,
                 (int(1 / 2 * image.shape[1]), int(1 / 2 * image.shape[0])),
-                interpolation=random.choice([1, 2, 3]),
+                interpolation=secrets.choice([1, 2, 3]),
             )
         else:
             image = util.imresize_np(image, 1 / 2, True)
         image = np.clip(image, 0.0, 1.0)
         sf = 2
 
-    shuffle_order = random.sample(range(7), 7)
+    shuffle_order = secrets.SystemRandom().sample(range(7), 7)
     idx1, idx2 = shuffle_order.index(2), shuffle_order.index(3)
     if idx1 > idx2:  # keep downsample3 last
         shuffle_order[idx1], shuffle_order[idx2] = shuffle_order[idx2], shuffle_order[idx1]
@@ -584,15 +584,15 @@ def degradation_bsrgan_variant(image, sf=4, isp_model=None, up=False):
         elif i == 2:
             a, b = image.shape[1], image.shape[0]
             # downsample2
-            if random.random() < 0.8:
-                sf1 = random.uniform(1, 2 * sf)
+            if secrets.SystemRandom().random() < 0.8:
+                sf1 = secrets.SystemRandom().uniform(1, 2 * sf)
                 image = cv2.resize(
                     image,
                     (int(1 / sf1 * image.shape[1]), int(1 / sf1 * image.shape[0])),
-                    interpolation=random.choice([1, 2, 3]),
+                    interpolation=secrets.choice([1, 2, 3]),
                 )
             else:
-                k = fspecial("gaussian", 25, random.uniform(0.1, 0.6 * sf))
+                k = fspecial("gaussian", 25, secrets.SystemRandom().uniform(0.1, 0.6 * sf))
                 k_shifted = shift_pixel(k, sf)
                 k_shifted = k_shifted / k_shifted.sum()  # blur with shifted kernel
                 image = ndimage.convolve(image, np.expand_dims(k_shifted, axis=2), mode="mirror")
@@ -602,7 +602,7 @@ def degradation_bsrgan_variant(image, sf=4, isp_model=None, up=False):
 
         elif i == 3:
             # downsample3
-            image = cv2.resize(image, (int(1 / sf * a), int(1 / sf * b)), interpolation=random.choice([1, 2, 3]))
+            image = cv2.resize(image, (int(1 / sf * a), int(1 / sf * b)), interpolation=secrets.choice([1, 2, 3]))
             image = np.clip(image, 0.0, 1.0)
 
         elif i == 4:
@@ -611,7 +611,7 @@ def degradation_bsrgan_variant(image, sf=4, isp_model=None, up=False):
 
         elif i == 5:
             # add JPEG noise
-            if random.random() < jpeg_prob:
+            if secrets.SystemRandom().random() < jpeg_prob:
                 image = add_JPEG_noise(image)
         #
         # elif i == 6:
