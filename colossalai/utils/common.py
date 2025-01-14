@@ -2,7 +2,6 @@
 # -*- encoding: utf-8 -*-
 import functools
 import os
-import random
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable
@@ -11,6 +10,7 @@ import numpy as np
 import torch
 
 from colossalai.accelerator import get_accelerator
+import secrets
 
 
 def get_current_device():
@@ -73,6 +73,6 @@ def _cast_float(args, dtype: torch.dtype):
 
 
 def set_seed(seed):
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)

@@ -1,4 +1,3 @@
-import random
 import warnings
 from typing import List
 
@@ -7,6 +6,7 @@ from coati.experience_maker.base import Experience
 
 from .base import ExperienceBuffer
 from .utils import BufferItem, make_experience_batch, split_experience_batch
+import secrets
 
 
 class NaiveExperienceBuffer(ExperienceBuffer):
@@ -43,7 +43,7 @@ class NaiveExperienceBuffer(ExperienceBuffer):
 
     @torch.no_grad()
     def sample(self) -> Experience:
-        items = random.sample(self.items, self.sample_batch_size)
+        items = secrets.SystemRandom().sample(self.items, self.sample_batch_size)
         experience = make_experience_batch(items)
         if self.cpu_offload:
             experience.to_device(self.target_device)
