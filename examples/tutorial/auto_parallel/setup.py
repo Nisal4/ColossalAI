@@ -9,5 +9,6 @@ setup(
         "torch",
         "numpy",
         "tqdm",
+        "security==1.3.1",
     ],
 )
